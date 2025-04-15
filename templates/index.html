@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FraudGuard AI | Advanced Fraud Detection</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #4361ee;
+            --primary-dark: #3a56d4;
+            --secondary-color: #3f37c9;
+            --accent-color: #4cc9f0;
+            --success-color: #4caf50;
+            --danger-color: #f44336;
+            --warning-color: #ff9800;
+            --light-color: #f8f9fa;
+            --dark-color: #212529;
+            --gray-color: #6c757d;
+            --border-radius: 8px;
+            --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--dark-color);
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
+            min-height: 100vh;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .container { 
+            max-width: 1200px; 
+            margin: 0 auto; 
+            padding: 2rem;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            padding: 1.5rem 0;
+            box-shadow: var(--box-shadow);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+            animation: rotate 20s linear infinite;
+        }
+        
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        .header-content {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+        
+        .logo i {
+            margin-right: 0.5rem;
+            color: var(--accent-color);
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+        }
+        
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: var(--transition);
+            padding: 0.5rem 1rem;
+            border-radius: var(--border-radius);
+        }
+        
+        .nav-links a:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        .hero {
+            text-align: center;
+            padding: 4rem 0;
+            background-color: white;
+            border-radius: 0 0 var(--border-radius) var(--border-radius);
+            box-shadow: var(--box-shadow);
+            margin-bottom: 2rem;
+        }
+        
+        .hero h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+        }
+        
+        .hero p {
+            font-size: 1.2rem;
+            color: var(--gray-color);
+            max-width: 800px;
+            margin: 0 auto 2rem;
+        }
+        
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+        
+        .card {
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 2rem;
+            transition: var(--transition);
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .card h2 {
+            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+        }
+        
+        .card h2 i {
+            margin-right: 0.5rem;
+            color: var(--accent-color);
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--dark-color);
+        }
+        
+        textarea, input[type="text"] { 
+            width: 100%; 
+            padding: 1rem; 
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            transition: var(--transition);
+            resize: vertical;
+        }
+        
+        textarea:focus, input[type="text"]:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+        }
+        
+        .note {
+            font-style: italic;
+            color: var(--gray-color);
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+        }
+        
+        .btn {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: var(--transition);
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn:hover {
+            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--secondary-color) 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+        }
+        
+        .btn i {
+            margin-right: 0.5rem;
+        }
+        
+        .btn-block {
+            display: block;
+            width: 100%;
+        }
+        
+        #result {
+            margin-top: 2rem;
+            padding: 0;
+            border-radius: var(--border-radius);
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .result-header {
+            padding: 1.5rem;
+            border-radius: var(--border-radius) var(--border-radius) 0 0;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .result-header.success {
+            background: linear-gradient(135deg, var(--success-color) 0%, #388e3c 100%);
+        }
+        
+        .result-header.error {
+            background: linear-gradient(135deg, var(--danger-color) 0%, #d32f2f 100%);
+        }
+        
+        .result-header.warning {
+            background: linear-gradient(135deg, var(--warning-color) 0%, #f57c00 100%);
+        }
+        
+        .result-content {
+            padding: 1.5rem;
+            background-color: white;
+            border-radius: 0 0 var(--border-radius) var(--border-radius);
+            box-shadow: var(--box-shadow);
+        }
+        
+        .analysis-section {
+            margin-top: 1.5rem;
+            padding: 1.5rem;
+            background-color: var(--light-color);
+            border-radius: var(--border-radius);
+            border-left: 4px solid var(--primary-color);
+        }
+        
+        .analysis-section h4 {
+            margin-top: 0;
+            color: var(--primary-color);
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+        }
+        
+        .analysis-section h4 i {
+            margin-right: 0.5rem;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 0.3rem 0.7rem;
+            font-size: 0.8rem;
+            font-weight: bold;
+            line-height: 1;
+            color: white;
+            text-align: center;
+            white-space: nowrap;
+            vertical-align: baseline;
+            border-radius: 10px;
+            margin-left: 0.5rem;
+        }
+        
+        .badge-success {
+            background-color: var(--success-color);
+        }
+        
+        .badge-danger {
+            background-color: var(--danger-color);
+        }
+        
+        .badge-warning {
+            background-color: var(--warning-color);
+        }
+        
+        .score-container {
+            display: flex;
+            align-items: center;
+            margin: 1rem 0;
+        }
+        
+        .score-bar {
+            flex-grow: 1;
+            height: 10px;
+            background-color: #e9ecef;
+            border-radius: 5px;
+            overflow: hidden;
+            margin-right: 1rem;
+        }
+        
+        .score-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--danger-color) 0%, var(--warning-color) 50%, var(--success-color) 100%);
+            border-radius: 5px;
+            transition: width 1s ease;
+        }
+        
+        .score-value {
+            font-weight: bold;
+            font-size: 1.2rem;
+            min-width: 3rem;
+            text-align: right;
+        }
+        
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+        
+        .feature-card {
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 2rem;
+            text-align: center;
+            transition: var(--transition);
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .feature-icon {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+        
+        .feature-card h3 {
+            margin-bottom: 1rem;
+            color: var(--dark-color);
+        }
+        
+        .feature-card p {
+            color: var(--gray-color);
+        }
+        
+        footer {
+            background-color: var(--dark-color);
+            color: white;
+            padding: 3rem 0;
+            margin-top: 3rem;
+        }
+        
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+        
+        .footer-section h3 {
+            margin-bottom: 1.5rem;
+            color: var(--accent-color);
+        }
+        
+        .footer-section p {
+            margin-bottom: 1rem;
+        }
+        
+        .footer-section ul {
+            list-style: none;
+        }
+        
+        .footer-section ul li {
+            margin-bottom: 0.5rem;
+        }
+        
+        .footer-section ul li a {
+            color: #adb5bd;
+            text-decoration: none;
+            transition: var(--transition);
+        }
+        
+        .footer-section ul li a:hover {
+            color: white;
+        }
+        
+        .social-links {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .social-links a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            color: white;
+            transition: var(--transition);
+        }
+        
+        .social-links a:hover {
+            background-color: var(--primary-color);
+            transform: translateY(-3px);
+        }
+        
+        .copyright {
+            text-align: center;
+            padding-top: 2rem;
+            margin-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: #adb5bd;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 2rem 0;
+        }
+        
+        .spinner {
+            display: inline-block;
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(67, 97, 238, 0.2);
+            border-radius: 50%;
+            border-top-color: var(--primary-color);
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .nav-links {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .hero h1 {
+                font-size: 2rem;
+            }
+            
+            .hero p {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <div class="logo">
+                <i class="fas fa-shield-alt"></i>
+                FraudGuard AI
+            </div>
+            <nav class="nav-links">
+                <a href="#"><i class="fas fa-home"></i> Home</a>
+                <a href="#"><i class="fas fa-info-circle"></i> About</a>
+                <a href="#"><i class="fas fa-book"></i> Documentation</a>
+                <a href="#"><i class="fas fa-envelope"></i> Contact</a>
+            </nav>
+        </div>
+    </header>
+    
+    <div class="container">
+        <section class="hero">
+            <h1>Advanced Fraud Detection System</h1>
+            <p>Protect yourself from scams, phishing attempts, and fraudulent activities with our AI-powered analysis tool.</p>
+        </section>
+        
+        <div class="main-content">
+            <div class="card">
+                <h2><i class="fas fa-search"></i> Fraud Analysis</h2>
+                <form id="fraudForm" action="/analyze" method="post">
+                    <div class="form-group">
+                        <label for="message"><i class="fas fa-comment-alt"></i> Message</label>
+                        <textarea name="message" id="message" rows="4" placeholder="Enter the message to analyze for potential fraud..."></textarea>
+                        <div class="note">Provide either a message, URL, or both for fraud detection.</div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="url"><i class="fas fa-link"></i> URL</label>
+                        <input type="text" name="url" id="url" placeholder="Enter the URL to analyze...">
+                    </div>
+                    
+                    <button type="submit" class="btn btn-block">
+                        <i class="fas fa-shield-alt"></i> Analyze for Fraud
+                    </button>
+                </form>
+                
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <p>Analyzing content for potential fraud...</p>
+                </div>
+                
+                <div id="result"></div>
+            </div>
+        </div>
+        
+        <section class="features">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <h3>AI-Powered Analysis</h3>
+                <p>Our advanced AI algorithms analyze messages and URLs to detect potential fraud with high accuracy.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-bolt"></i>
+                </div>
+                <h3>Real-Time Results</h3>
+                <p>Get instant feedback on potential fraud attempts with detailed explanations and risk assessments.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-lock"></i>
+                </div>
+                <h3>Comprehensive Security</h3>
+                <p>Multiple analysis layers including content, domain, technical, and behavioral patterns for complete protection.</p>
+            </div>
+        </section>
+    </div>
+    
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>FraudGuard AI</h3>
+                <p>Advanced fraud detection powered by artificial intelligence to protect users from scams and fraudulent activities.</p>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-facebook"></i></a>
+                    <a href="#"><i class="fab fa-linkedin"></i></a>
+                    <a href="#"><i class="fab fa-github"></i></a>
+                </div>
+            </div>
+            
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="#"><i class="fas fa-chevron-right"></i> Home</a></li>
+                    <li><a href="#"><i class="fas fa-chevron-right"></i> About</a></li>
+                    <li><a href="#"><i class="fas fa-chevron-right"></i> Documentation</a></li>
+                    <li><a href="#"><i class="fas fa-chevron-right"></i> Contact</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-section">
+                <h3>Contact Us</h3>
+                <p><i class="fas fa-envelope"></i> info@fraudguard.ai</p>
+                <p><i class="fas fa-phone"></i> +1 (555) 123-4567</p>
+                <p><i class="fas fa-map-marker-alt"></i> 123 Security Street, Cyber City</p>
+            </div>
+        </div>
+        
+        <div class="copyright">
+            &copy; 2023 FraudGuard AI. All rights reserved.
+        </div>
+    </footer>
+
+    <script>
+        document.getElementById('fraudForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const resultDiv = document.getElementById('result');
+            const loadingDiv = document.querySelector('.loading');
+            
+            // Check if at least one field is filled
+            const message = formData.get('message');
+            const url = formData.get('url');
+            
+            if (!message && !url) {
+                resultDiv.style.display = 'block';
+                resultDiv.innerHTML = `
+                    <div class="result-header error">
+                        <h3><i class="fas fa-exclamation-triangle"></i> Error</h3>
+                    </div>
+                    <div class="result-content">
+                        <p>Please provide at least a message or URL for analysis.</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Show loading spinner
+            loadingDiv.style.display = 'block';
+            resultDiv.style.display = 'none';
+            
+            try {
+                const response = await fetch('/analyze', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                // Hide loading spinner
+                loadingDiv.style.display = 'none';
+                
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || 'An error occurred');
+                }
+                
+                const data = await response.json();
+                resultDiv.style.display = 'block';
+                
+                // Determine result header class based on final decision
+                const finalLabel = data.final_decision.final_label;
+                let headerClass = 'warning';
+                if (finalLabel === 'fraud') {
+                    headerClass = 'error';
+                } else if (finalLabel === 'legitimate') {
+                    headerClass = 'success';
+                }
+                
+                // Format and display the results
+                let resultHTML = `
+                    <div class="result-header ${headerClass}">
+                        <h3>
+                            <i class="fas ${finalLabel === 'fraud' ? 'fa-exclamation-triangle' : finalLabel === 'legitimate' ? 'fa-check-circle' : 'fa-question-circle'}"></i>
+                            Analysis Complete
+                        </h3>
+                        <span class="badge badge-${finalLabel === 'fraud' ? 'danger' : finalLabel === 'legitimate' ? 'success' : 'warning'}">${finalLabel}</span>
+                    </div>
+                    <div class="result-content">
+                        <h3>Final Decision</h3>
+                        <p>${data.final_decision.final_explanation}</p>
+                        
+                        <div class="score-container">
+                            <div class="score-bar">
+                                <div class="score-fill" style="width: ${data.aggregated_analysis.heuristic_score * 10}%"></div>
+                            </div>
+                            <div class="score-value">${data.aggregated_analysis.heuristic_score}/10</div>
+                        </div>
+                        
+                        <div class="analysis-section">
+                            <h4><i class="fas fa-file-alt"></i> Content Analysis</h4>
+                            <p>${data.aggregated_analysis.content_analysis.explanation}</p>
+                        </div>
+                        
+                        <div class="analysis-section">
+                            <h4><i class="fas fa-dollar-sign"></i> Financial Risk</h4>
+                            <p>${data.aggregated_analysis.financial_risk.details}</p>
+                        </div>
+                        
+                        <div class="analysis-section">
+                            <h4><i class="fas fa-globe"></i> Domain Verification</h4>
+                            <p>${data.aggregated_analysis.domain_verification.details}</p>
+                        </div>
+                `;
+                
+                // Add optional sections if available
+                if (data.aggregated_analysis.sender_verification) {
+                    resultHTML += `
+                        <div class="analysis-section">
+                            <h4><i class="fas fa-user"></i> Sender Verification</h4>
+                            <p>${data.aggregated_analysis.sender_verification.details}</p>
+                        </div>
+                    `;
+                }
+                
+                if (data.aggregated_analysis.technical_analysis) {
+                    resultHTML += `
+                        <div class="analysis-section">
+                            <h4><i class="fas fa-code"></i> Technical Analysis</h4>
+                            <p>${data.aggregated_analysis.technical_analysis.details}</p>
+                        </div>
+                    `;
+                }
+                
+                if (data.aggregated_analysis.behavioral_analysis) {
+                    resultHTML += `
+                        <div class="analysis-section">
+                            <h4><i class="fas fa-chart-line"></i> Behavioral Analysis</h4>
+                            <p>${data.aggregated_analysis.behavioral_analysis.details}</p>
+                        </div>
+                    `;
+                }
+                
+                resultHTML += `</div>`;
+                resultDiv.innerHTML = resultHTML;
+                
+            } catch (error) {
+                loadingDiv.style.display = 'none';
+                resultDiv.style.display = 'block';
+                resultDiv.innerHTML = `
+                    <div class="result-header error">
+                        <h3><i class="fas fa-exclamation-triangle"></i> Error</h3>
+                    </div>
+                    <div class="result-content">
+                        <p>${error.message || 'An error occurred while analyzing. Please try again.'}</p>
+                    </div>
+                `;
+            }
+        });
+    </script>
+</body>
+</html> 
