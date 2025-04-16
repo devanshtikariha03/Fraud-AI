@@ -1,281 +1,193 @@
-from groq import AsyncGroq
+from groq import Groq
 import json
-from typing import Dict, Optional
+from typing import Dict, Optional, Any
 import os
 import httpx
+import re
+from urllib.parse import urlparse
 
-# Initialize GROQ client with environment variable
-# Set the API key as an environment variable instead of hardcoding it
-os.environ["GROQ_API_KEY"] = "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"
+# Initialize Groq client
+client = Groq(api_key=os.getenv("GROQ_API_KEY"))
 
-# Create a custom httpx client without proxies
-http_client = httpx.AsyncClient()
-client = AsyncGroq(http_client=http_client)
+def extract_urls(text: str) -> list:
+    """Extract URLs from text using regex."""
+    url_pattern = r'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\\(\\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+'
+    return re.findall(url_pattern, text)
 
-async def analyze_with_groq(message: Optional[str] = None, url: Optional[str] = None) -> Dict:
+def analyze_with_groq(message: Optional[str] = None, url: Optional[str] = None) -> Dict[str, Any]:
     """
-    Analyze text or URL using GROQ for fraud detection
+    Analyze content for fraud using Groq LLM with enhanced detection capabilities.
+    
+    Args:
+        message: Optional text message to analyze
+        url: Optional URL to analyze
+        
+    Returns:
+        Dict containing analysis results
     """
-    # Construct the prompt based on what's available
-    if message and url:
-        prompt = f"""Analyze the following message and URL for potential fraud. Consider these aspects:
-
-1. Sender Information:
-   - Email/phone details and authenticity
-   - Potential spoofing indicators
-   - Known fraudulent sources
-
-2. Technical Metadata:
-   - Email headers (if applicable)
-   - HTTP headers and SSL certificates
-   - Authentication results (DKIM, SPF, DMARC)
-
-3. Domain and URL Analysis:
-   - WHOIS data (registration date, registrar, owner)
-   - URL reputation and history
-   - Suspicious patterns or redirections
-
-4. Behavioral and Contextual Data:
-   - Timing and frequency patterns
-   - Unusual communication patterns
-   - Context of the message
-
-5. Content Analysis:
-   - Urgency and pressure tactics
-   - Suspicious financial requests
-   - Unusual language patterns
-   - Grammar and spelling inconsistencies
-   - Visual inconsistencies (if mentioned)
-
-6. Financial Indicators:
-   - Unusual payment requests
-   - Unexpected fees
-   - Requests for upfront payments
-   - Suspicious transaction patterns
-
-Message: {message}
-URL: {url}
-
-Provide a detailed analysis in JSON format with the following structure:
-{{
-    "aggregated_analysis": {{
-        "heuristic_score": <score from 1-10>,
-        "content_analysis": {{
-            "label": "fraud" or "legitimate",
-            "explanation": "detailed explanation"
-        }},
-        "financial_risk": {{
-            "financial_risk": true/false,
-            "details": "explanation"
-        }},
-        "domain_verification": {{
-            "verified": true/false,
-            "details": "explanation"
-        }},
-        "sender_verification": {{
-            "verified": true/false,
-            "details": "explanation of sender authenticity"
-        }},
-        "technical_analysis": {{
-            "secure": true/false,
-            "details": "explanation of technical security indicators"
-        }},
-        "behavioral_analysis": {{
-            "suspicious": true/false,
-            "details": "explanation of behavioral patterns"
-        }}
-    }},
-    "final_decision": {{
-        "final_label": "fraud" or "legitimate",
-        "final_explanation": "comprehensive explanation"
-    }}
-}}"""
-    elif message:
-        prompt = f"""Analyze the following message for potential fraud. Consider these aspects:
-
-1. Sender Information:
-   - Email/phone details and authenticity
-   - Potential spoofing indicators
-   - Known fraudulent sources
-
-2. Technical Metadata:
-   - Email headers (if applicable)
-   - Authentication results (DKIM, SPF, DMARC)
-
-3. Behavioral and Contextual Data:
-   - Timing and frequency patterns
-   - Unusual communication patterns
-   - Context of the message
-
-4. Content Analysis:
-   - Urgency and pressure tactics
-   - Suspicious financial requests
-   - Unusual language patterns
-   - Grammar and spelling inconsistencies
-   - Visual inconsistencies (if mentioned)
-
-5. Financial Indicators:
-   - Unusual payment requests
-   - Unexpected fees
-   - Requests for upfront payments
-   - Suspicious transaction patterns
-
-Message: {message}
-
-Provide a detailed analysis in JSON format with the following structure:
-{{
-    "aggregated_analysis": {{
-        "heuristic_score": <score from 1-10>,
-        "content_analysis": {{
-            "label": "fraud" or "legitimate",
-            "explanation": "detailed explanation"
-        }},
-        "financial_risk": {{
-            "financial_risk": true/false,
-            "details": "explanation"
-        }},
-        "domain_verification": {{
-            "verified": true/false,
-            "details": "No URL provided for verification"
-        }},
-        "sender_verification": {{
-            "verified": true/false,
-            "details": "explanation of sender authenticity"
-        }},
-        "technical_analysis": {{
-            "secure": true/false,
-            "details": "explanation of technical security indicators"
-        }},
-        "behavioral_analysis": {{
-            "suspicious": true/false,
-            "details": "explanation of behavioral patterns"
-        }}
-    }},
-    "final_decision": {{
-        "final_label": "fraud" or "legitimate",
-        "final_explanation": "comprehensive explanation"
-    }}
-}}"""
-    elif url:
-        prompt = f"""Analyze the following URL for potential fraud. Consider these aspects:
-
-1. Domain and URL Analysis:
-   - WHOIS data (registration date, registrar, owner)
-   - URL reputation and history
-   - Suspicious patterns or redirections
-   - Domain age and legitimacy
-
-2. Technical Metadata:
-   - HTTP headers and SSL certificates
-   - Authentication results
-   - Security protocols
-
-3. Content Analysis:
-   - Visual inconsistencies
-   - Design quality and consistency
-   - Logo usage and branding
-   - Language and grammar patterns
-
-4. Behavioral Indicators:
-   - Known phishing patterns
-   - Suspicious redirects
-   - Malware hosting indicators
-
-URL: {url}
-
-Provide a detailed analysis in JSON format with the following structure:
-{{
-    "aggregated_analysis": {{
-        "heuristic_score": <score from 1-10>,
-        "content_analysis": {{
-            "label": "fraud" or "legitimate",
-            "explanation": "No message content provided for analysis"
-        }},
-        "financial_risk": {{
-            "financial_risk": true/false,
-            "details": "explanation based on URL analysis"
-        }},
-        "domain_verification": {{
-            "verified": true/false,
-            "details": "detailed domain analysis"
-        }},
-        "sender_verification": {{
-            "verified": true/false,
-            "details": "No sender information provided"
-        }},
-        "technical_analysis": {{
-            "secure": true/false,
-            "details": "explanation of technical security indicators"
-        }},
-        "behavioral_analysis": {{
-            "suspicious": true/false,
-            "details": "explanation of behavioral patterns"
-        }}
-    }},
-    "final_decision": {{
-        "final_label": "fraud" or "legitimate",
-        "final_explanation": "comprehensive explanation"
-    }}
-}}"""
-    else:
-        # This should never happen due to validation in the API endpoint
+    if not message and not url:
         return {
-            "error": "At least one of message or URL must be provided"
+            "error": "At least one of message or URL must be provided",
+            "is_fraudulent": False,
+            "confidence": 0.0
         }
 
+    # Construct specialized prompt based on available information
+    if message and url:
+        prompt = f"""Analyze the following message and URL for potential fraud:
+
+MESSAGE:
+{message}
+
+URL:
+{url}
+
+Consider the following aspects in your analysis:
+
+1. Content Analysis:
+- Language patterns and inconsistencies
+- Urgency or pressure tactics
+- Grammatical errors or unusual formatting
+- Suspicious keywords or phrases
+- Request for sensitive information
+- Impersonation attempts
+
+2. URL Analysis:
+- Domain age and reputation
+- SSL certificate validity
+- Suspicious URL patterns
+- Known malicious indicators
+- Redirect chains
+- URL encoding tricks
+
+3. Technical Indicators:
+- Email header analysis (if present)
+- IP reputation
+- Domain WHOIS data
+- SSL/TLS configuration
+- Authentication mechanisms
+- Known blacklist matches
+
+4. Behavioral Patterns:
+- Timing of communication
+- User interaction history
+- Click-through patterns
+- Session behavior
+- Device fingerprinting
+- Geographic anomalies
+
+5. Financial Risk Assessment:
+- Payment method requests
+- Unusual transaction patterns
+- Currency inconsistencies
+- Bank account information requests
+- Cryptocurrency mentions
+- Investment scheme indicators
+
+6. Contextual Analysis:
+- Industry-specific red flags
+- Known scam patterns
+- Historical fraud cases
+- Geographic risk factors
+- Time-based patterns
+- Target audience analysis
+
+Provide a detailed analysis in the following JSON format:
+{{
+    "is_fraudulent": boolean,
+    "confidence": float (0.0 to 1.0),
+    "risk_level": "LOW" | "MEDIUM" | "HIGH" | "CRITICAL",
+    "content_analysis": {{
+        "suspicious_patterns": [string],
+        "language_analysis": {{
+            "urgency_level": "LOW" | "MEDIUM" | "HIGH",
+            "grammar_issues": boolean,
+            "suspicious_phrases": [string]
+        }},
+        "impersonation_risk": boolean,
+        "sensitive_info_request": boolean
+    }},
+    "url_analysis": {{
+        "domain_reputation": "SAFE" | "SUSPICIOUS" | "MALICIOUS",
+        "ssl_valid": boolean,
+        "redirect_chain": [string],
+        "known_malicious": boolean
+    }},
+    "technical_analysis": {{
+        "header_analysis": {{
+            "spf_valid": boolean,
+            "dkim_valid": boolean,
+            "dmarc_valid": boolean
+        }},
+        "ip_reputation": "GOOD" | "NEUTRAL" | "BAD",
+        "domain_age_days": integer,
+        "blacklist_matches": [string]
+    }},
+    "behavioral_analysis": {{
+        "timing_suspicious": boolean,
+        "interaction_pattern": "NORMAL" | "SUSPICIOUS",
+        "geographic_anomaly": boolean,
+        "device_risk": "LOW" | "MEDIUM" | "HIGH"
+    }},
+    "financial_risk": {{
+        "payment_method_mentioned": boolean,
+        "cryptocurrency_mentioned": boolean,
+        "unusual_amounts": boolean,
+        "bank_info_requested": boolean
+    }},
+    "contextual_analysis": {{
+        "industry_red_flags": [string],
+        "known_scam_match": boolean,
+        "geographic_risk": "LOW" | "MEDIUM" | "HIGH",
+        "target_audience_risk": "LOW" | "MEDIUM" | "HIGH"
+    }},
+    "recommendations": [string],
+    "explanation": string
+}}"""
+    elif message:
+        prompt = f"""Analyze the following message for potential fraud:
+
+MESSAGE:
+{message}
+
+[Same analysis criteria as above, focusing on message content]"""
+    else:
+        prompt = f"""Analyze the following URL for potential fraud:
+
+URL:
+{url}
+
+[Same analysis criteria as above, focusing on URL analysis]"""
+
     try:
-        # Call GROQ API with the updated model
-        completion = await client.chat.completions.create(
-            model="llama-3.3-70b-versatile",
+        # Get completion from Groq
+        completion = client.chat.completions.create(
+            model="mixtral-8x7b-32768",
             messages=[
-                {"role": "system", "content": "You are a definitive fraud detection expert with extensive knowledge of phishing, scams, and online fraud patterns."},
+                {"role": "system", "content": "You are an expert fraud detection system. Analyze the provided content for potential fraud indicators and provide detailed analysis."},
                 {"role": "user", "content": prompt}
             ],
-            temperature=0.2,
-            max_tokens=1000,
-            top_p=1
+            temperature=0.1,
+            max_tokens=4000
         )
-
+        
         # Parse the response
         response_text = completion.choices[0].message.content
-        # Extract JSON from the response (in case there's additional text)
-        json_str = response_text[response_text.find("{"):response_text.rfind("}")+1]
-        result = json.loads(json_str)
-        
-        return result
-
-    except Exception as e:
-        # Return a safe fallback response in case of errors
-        return {
-            "aggregated_analysis": {
-                "heuristic_score": 5,
-                "content_analysis": {
-                    "label": "error",
-                    "explanation": f"Error during analysis: {str(e)}"
-                },
-                "financial_risk": {
-                    "financial_risk": False,
-                    "details": "Analysis failed"
-                },
-                "domain_verification": {
-                    "verified": False,
-                    "details": "Analysis failed"
-                },
-                "sender_verification": {
-                    "verified": False,
-                    "details": "Analysis failed"
-                },
-                "technical_analysis": {
-                    "secure": False,
-                    "details": "Analysis failed"
-                },
-                "behavioral_analysis": {
-                    "suspicious": False,
-                    "details": "Analysis failed"
-                }
-            },
-            "final_decision": {
-                "final_label": "error",
-                "final_explanation": "An error occurred during the analysis. Please try again."
+        try:
+            # Extract JSON from the response
+            json_str = response_text[response_text.find("{"):response_text.rfind("}")+1]
+            result = json.loads(json_str)
+            return result
+        except json.JSONDecodeError:
+            return {
+                "error": "Failed to parse analysis results",
+                "is_fraudulent": False,
+                "confidence": 0.0
             }
+            
+    except Exception as e:
+        return {
+            "error": f"Analysis failed: {str(e)}",
+            "is_fraudulent": False,
+            "confidence": 0.0
         } 
