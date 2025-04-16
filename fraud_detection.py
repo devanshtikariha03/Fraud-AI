@@ -190,4 +190,4 @@ URL:
             "error": f"Analysis failed: {str(e)}",
             "is_fraudulent": False,
             "confidence": 0.0
-        } 
+        }
