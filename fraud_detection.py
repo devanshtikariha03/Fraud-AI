@@ -6,7 +6,7 @@ import httpx
 
 # Initialize GROQ client with environment variable
 # Set the API key as an environment variable instead of hardcoding it
-os.environ["GROQ_API_KEY"] = "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"
+os.environ["GROQ_API_KEY"] = "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"
 
 # Create a custom httpx client without proxies
 http_client = httpx.AsyncClient()
