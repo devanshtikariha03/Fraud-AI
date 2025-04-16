@@ -1,21 +1,13 @@
-# Fraud Detection Web Application
+# FraudGuard AI
 
-A real-time fraud detection system built with FastAPI and modern web technologies.
-
-## Features
-
-- Real-time message analysis for fraud detection
-- Optional URL analysis
-- Detailed fraud analysis results
-- Modern, responsive web interface
-- Asynchronous processing
+A powerful fraud detection system using Groq LLM.
 
 ## Setup
 
-1. Create a virtual environment (recommended):
+1. Clone the repository:
 ```bash
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+git clone https://github.com/devanshtikariha03/Fraud-AI.git
+cd Fraud-AI
 ```
 
 2. Install dependencies:
@@ -23,27 +15,58 @@ source venv/bin/activate  # On Windows: venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-3. Run the application:
+3. Set up your environment variables:
+   - Copy `.env.example` to `.env`:
+   ```bash
+   cp .env.example .env
+   ```
+   - Edit `.env` and add your Groq API key:
+   ```
+   GROQ_API_KEY=your_groq_api_key_here
+   ```
+
+4. Run the application:
 ```bash
 python main.py
 ```
 
-4. Open your browser and navigate to:
-```
-http://localhost:8000
-```
+5. Access the application at http://localhost:8001
 
-## Usage
+## Features
 
-1. Enter the message you want to analyze in the text area
-2. Optionally, provide a URL to analyze
-3. Click "Analyze" to get the fraud detection results
-4. View the detailed analysis including:
-   - Final decision
-   - Heuristic score
-   - Content analysis
-   - Financial risk assessment
-   - Domain verification
+- Advanced fraud detection using Groq LLM
+- Rate limiting to prevent API abuse
+- Comprehensive analysis of messages and URLs
+- Detailed fraud risk assessment
+- User-friendly web interface
+
+## API Endpoints
+
+- `GET /`: Homepage with the fraud detection form
+- `POST /analyze`: Analyze content for fraud
+- `GET /healthz`: Health check endpoint
+
+## Configuration
+
+You can modify the following settings in your `.env` file:
+- `GROQ_API_KEY`: Your Groq API key
+- `PORT`: Server port (default: 8001)
+- `HOST`: Server host (default: 0.0.0.0)
+
+## Security
+
+- API keys are stored in environment variables
+- Rate limiting is implemented to prevent abuse
+- Input validation for all endpoints
+- Error handling and logging
+
+## Contributing
+
+1. Fork the repository
+2. Create your feature branch
+3. Commit your changes
+4. Push to the branch
+5. Create a Pull Request
 
 ## Project Structure
 

@@ -5,9 +5,10 @@ import os
 import httpx
 import re
 from urllib.parse import urlparse
+from config import GROQ_API_KEY
 
 # Initialize Groq client
-client = Groq(api_key=os.getenv("GROQ_API_KEY"))
+client = Groq(api_key=GROQ_API_KEY)
 
 def extract_urls(text: str) -> list:
     """Extract URLs from text using regex."""
